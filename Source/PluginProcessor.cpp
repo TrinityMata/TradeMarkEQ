@@ -106,6 +106,50 @@ void TradeMarkEQAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
 
     leftChain.prepare(spec);
     rightChain.prepare(spec);
+
+    auto chainSettings = getChainSettings(apvts);
+
+    auto lowPeakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate,
+        chainSettings.lowPeakFreq,
+        chainSettings.lowPeakQuality,
+        juce::Decibels::decibelsToGain(chainSettings.lowPeakGainInDecibels));
+
+    *leftChain.get<ChainPositions::LowPeak>().coefficients = *lowPeakCoefficients;
+    *rightChain.get<ChainPositions::LowPeak>().coefficients = *lowPeakCoefficients;
+
+    auto midlowPeakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate,
+        chainSettings.midlowPeakFreq,
+        chainSettings.midlowPeakQuality,
+        juce::Decibels::decibelsToGain(chainSettings.midlowPeakGainInDecibels));
+
+    *leftChain.get<ChainPositions::MidLowPeak>().coefficients = *midlowPeakCoefficients;
+    *rightChain.get<ChainPositions::MidLowPeak>().coefficients = *midlowPeakCoefficients;
+
+    auto midPeakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate,
+        chainSettings.midPeakFreq,
+        chainSettings.midPeakQuality,
+        juce::Decibels::decibelsToGain(chainSettings.midPeakGainInDecibels));
+
+    *leftChain.get<ChainPositions::MidPeak>().coefficients = *midPeakCoefficients;
+    *rightChain.get<ChainPositions::MidPeak>().coefficients = *midPeakCoefficients;
+
+    auto midhighPeakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate,
+        chainSettings.midhighPeakFreq,
+        chainSettings.midhighPeakQuality,
+        juce::Decibels::decibelsToGain(chainSettings.midhighPeakGainInDecibels));
+
+    *leftChain.get<ChainPositions::MidHighPeak>().coefficients = *midhighPeakCoefficients;
+    *rightChain.get<ChainPositions::MidHighPeak>().coefficients = *midhighPeakCoefficients;
+
+    auto highPeakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate,
+        chainSettings.highPeakFreq,
+        chainSettings.highPeakQuality,
+        juce::Decibels::decibelsToGain(chainSettings.highPeakGainInDecibels));
+
+    *leftChain.get<ChainPositions::HighPeak>().coefficients = *highPeakCoefficients;
+    *rightChain.get<ChainPositions::HighPeak>().coefficients = *highPeakCoefficients;
+
+
 }
 
 void TradeMarkEQAudioProcessor::releaseResources()
@@ -155,6 +199,48 @@ void TradeMarkEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
+    auto chainSettings = getChainSettings(apvts);
+
+    auto lowPeakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(),
+        chainSettings.lowPeakFreq,
+        chainSettings.lowPeakQuality,
+        juce::Decibels::decibelsToGain(chainSettings.lowPeakGainInDecibels));
+
+    *leftChain.get<ChainPositions::LowPeak>().coefficients = *lowPeakCoefficients;
+    *rightChain.get<ChainPositions::LowPeak>().coefficients = *lowPeakCoefficients;
+
+    auto midlowPeakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(),
+        chainSettings.midlowPeakFreq,
+        chainSettings.midlowPeakQuality,
+        juce::Decibels::decibelsToGain(chainSettings.midlowPeakGainInDecibels));
+
+    *leftChain.get<ChainPositions::MidLowPeak>().coefficients = *midlowPeakCoefficients;
+    *rightChain.get<ChainPositions::MidLowPeak>().coefficients = *midlowPeakCoefficients;
+
+    auto midPeakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(),
+        chainSettings.midPeakFreq,
+        chainSettings.midPeakQuality,
+        juce::Decibels::decibelsToGain(chainSettings.midPeakGainInDecibels));
+
+    *leftChain.get<ChainPositions::MidPeak>().coefficients = *midPeakCoefficients;
+    *rightChain.get<ChainPositions::MidPeak>().coefficients = *midPeakCoefficients;
+
+    auto midhighPeakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(),
+        chainSettings.midhighPeakFreq,
+        chainSettings.midhighPeakQuality,
+        juce::Decibels::decibelsToGain(chainSettings.midhighPeakGainInDecibels));
+
+    *leftChain.get<ChainPositions::MidHighPeak>().coefficients = *midhighPeakCoefficients;
+    *rightChain.get<ChainPositions::MidHighPeak>().coefficients = *midhighPeakCoefficients;
+
+    auto highPeakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(),
+        chainSettings.highPeakFreq,
+        chainSettings.highPeakQuality,
+        juce::Decibels::decibelsToGain(chainSettings.highPeakGainInDecibels));
+
+    *leftChain.get<ChainPositions::HighPeak>().coefficients = *highPeakCoefficients;
+    *rightChain.get<ChainPositions::HighPeak>().coefficients = *highPeakCoefficients;
+
     juce::dsp::AudioBlock<float> block(buffer);
 
     auto leftBlock = block.getSingleChannelBlock(0);
@@ -165,6 +251,8 @@ void TradeMarkEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 
     leftChain.process(leftContext);
     rightChain.process(rightContext);
+
+
 }
 
 //==============================================================================
@@ -193,27 +281,62 @@ void TradeMarkEQAudioProcessor::setStateInformation (const void* data, int sizeI
     // whose contents will have been created by the getStateInformation() call.
 }
 
+ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts)
+{
+    ChainSettings settings;
+
+    settings.lowCutFreq = apvts.getRawParameterValue("LowCut Freq")->load();
+    settings.highCutFreq = apvts.getRawParameterValue("HighCut Freq")->load();
+
+    settings.lowPeakFreq = apvts.getRawParameterValue("LowPeak Freq")->load();
+    settings.lowPeakGainInDecibels = apvts.getRawParameterValue("LowPeak Gain")->load();
+    settings.lowPeakQuality = apvts.getRawParameterValue("LowPeak Quality")->load();
+
+    settings.midlowPeakFreq = apvts.getRawParameterValue("MidLowPeak Freq")->load();
+    settings.midlowPeakGainInDecibels = apvts.getRawParameterValue("MidLowPeak Gain")->load();
+    settings.midlowPeakQuality = apvts.getRawParameterValue("MidLowPeak Quality")->load();
+
+    settings.midPeakFreq = apvts.getRawParameterValue("MidPeak Freq")->load();
+    settings.midPeakGainInDecibels = apvts.getRawParameterValue("MidPeak Gain")->load();
+    settings.midPeakQuality = apvts.getRawParameterValue("MidPeak Quality")->load();
+
+    settings.midhighPeakFreq = apvts.getRawParameterValue("MidHighPeak Freq")->load();
+    settings.midhighPeakGainInDecibels = apvts.getRawParameterValue("MidHighPeak Gain")->load();
+    settings.midhighPeakQuality = apvts.getRawParameterValue("MidHighPeak Quality")->load();
+
+    settings.highPeakFreq = apvts.getRawParameterValue("HighPeak Freq")->load();
+    settings.highPeakGainInDecibels = apvts.getRawParameterValue("HighPeak Gain")->load();
+    settings.highPeakQuality = apvts.getRawParameterValue("HighPeak Quality")->load();
+
+    settings.lowCutSlope = apvts.getRawParameterValue("LowCut Slope")->load();
+    settings.highCutSlope = apvts.getRawParameterValue("HighCut Slope")->load();
+
+    return settings;
+}
+
 juce::AudioProcessorValueTreeState::ParameterLayout TradeMarkEQAudioProcessor::createParameterLayout()
 {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
+    //HPF
     layout.add(std::make_unique<juce::AudioParameterFloat>
         ("LowCut Freq",
             "LowCut Freq",
-            juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 1.f),
+            juce::NormalisableRange<float>(20.f, 20000.f, 1.f, .25f),
             20.f));
 
+    //LPF
     layout.add(std::make_unique<juce::AudioParameterFloat>
         ("HighCut Freq",
             "HighCut Freq",
-            juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 1.f),
+            juce::NormalisableRange<float>(20.f, 20000.f, 1.f, .25f),
             20000.f));
 
     //Low Peak
     layout.add(std::make_unique<juce::AudioParameterFloat>
         ("LowPeak Freq",
             "LowPeak Freq",
-            juce::NormalisableRange<float>(20.f, 500.f, 1.f, 1.f),
+            juce::NormalisableRange<float>(20.f, 500.f, 1.f, .25f),
             250.f));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>
@@ -232,7 +355,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout TradeMarkEQAudioProcessor::c
     layout.add(std::make_unique<juce::AudioParameterFloat>
         ("MidLowPeak Freq",
             "MidLowPeak Freq",
-            juce::NormalisableRange<float>(40.f, 1000.f, 1.f, 1.f),
+            juce::NormalisableRange<float>(40.f, 1000.f, 1.f, .25f),
             550.f));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>
@@ -251,7 +374,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout TradeMarkEQAudioProcessor::c
     layout.add(std::make_unique<juce::AudioParameterFloat>
         ("MidPeak Freq",
             "MidPeak Freq",
-            juce::NormalisableRange<float>(125.f, 8000.f, 1.f, 1.f),
+            juce::NormalisableRange<float>(125.f, 8000.f, 1.f, .25f),
             1000.f));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>
@@ -270,7 +393,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout TradeMarkEQAudioProcessor::c
     layout.add(std::make_unique<juce::AudioParameterFloat>
         ("MidHighPeak Freq",
             "MidHighPeak Freq",
-            juce::NormalisableRange<float>(200.f, 18000.f, 1.f, 1.f),
+            juce::NormalisableRange<float>(200.f, 18000.f, 1.f, .25f),
             12000.f));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>
@@ -289,7 +412,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout TradeMarkEQAudioProcessor::c
     layout.add(std::make_unique<juce::AudioParameterFloat>
         ("HighPeak Freq",
             "HighPeak Freq",
-            juce::NormalisableRange<float>(2000.f, 20000.f, 1.f, 1.f),
+            juce::NormalisableRange<float>(2000.f, 20000.f, 1.f, .25f),
             17000.f));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>
@@ -313,6 +436,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout TradeMarkEQAudioProcessor::c
         stringArray.add(str);
     }
 
+    //HPF & LPF Slopes
     layout.add(std::make_unique < juce::AudioParameterChoice>("LowCut Slope", "LowCut Slope", stringArray, 0));
     layout.add(std::make_unique < juce::AudioParameterChoice>("HighCut Slope", "HighCut Slope", stringArray, 0));
 
