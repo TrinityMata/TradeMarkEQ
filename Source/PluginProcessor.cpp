@@ -312,10 +312,7 @@ void updateCoefficients(Coefficients& old, const Coefficients& replacements)
 
 void TradeMarkEQAudioProcessor::updateLowCutFilters(const ChainSettings& chainSettings)
 {
-    auto cutCoefficients = juce::dsp::FilterDesign<float>::
-        designIIRHighpassHighOrderButterworthMethod(chainSettings.lowCutFreq,
-            getSampleRate(),
-            2 * (chainSettings.lowCutSlope + 1));
+    auto cutCoefficients = makeLowCutFilter(chainSettings, getSampleRate());
 
     auto& leftLowCut = leftChain.get<ChainPositions::LowCut>();
     auto& rightLowCut = rightChain.get<ChainPositions::LowCut>();
@@ -326,10 +323,7 @@ void TradeMarkEQAudioProcessor::updateLowCutFilters(const ChainSettings& chainSe
 
 void TradeMarkEQAudioProcessor::updateHighCutFilters(const ChainSettings& chainSettings)
 {
-    auto highCutCoefficients = juce::dsp::FilterDesign<float>::
-        designIIRLowpassHighOrderButterworthMethod(chainSettings.highCutFreq,
-            getSampleRate(),
-            2 * (chainSettings.highCutSlope + 1));
+    auto highCutCoefficients = makeHighCutFilter(chainSettings, getSampleRate());
 
     auto& leftHighCut = leftChain.get<ChainPositions::HighCut>();
     auto& rightHighCut = rightChain.get<ChainPositions::HighCut>();
