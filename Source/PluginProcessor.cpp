@@ -245,50 +245,67 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts)
     return settings;
 }
 
-void TradeMarkEQAudioProcessor::updatePeakFilters(const ChainSettings& chainSettings)
+Coefficients makeLowPeakFilter(const ChainSettings& chainSettings, double sampleRate)
 {
-    auto lowPeakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(),
+    return juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate,
         chainSettings.lowPeakFreq,
         chainSettings.lowPeakQuality,
         juce::Decibels::decibelsToGain(chainSettings.lowPeakGainInDecibels));
 
-    updateCoefficients(leftChain.get<ChainPositions::LowPeak>().coefficients, lowPeakCoefficients);
-    updateCoefficients(rightChain.get<ChainPositions::LowPeak>().coefficients, lowPeakCoefficients);
-
-    auto midlowPeakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(),
+}
+Coefficients makeMidLowPeakFilter(const ChainSettings& chainSettings, double sampleRate)
+{
+    return juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate,
         chainSettings.midlowPeakFreq,
         chainSettings.midlowPeakQuality,
         juce::Decibels::decibelsToGain(chainSettings.midlowPeakGainInDecibels));
-
-    updateCoefficients(leftChain.get<ChainPositions::MidLowPeak>().coefficients, midlowPeakCoefficients);
-    updateCoefficients(rightChain.get<ChainPositions::MidLowPeak>().coefficients, midlowPeakCoefficients);
-
-    auto midPeakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(),
+}
+Coefficients makeMidPeakFilter(const ChainSettings& chainSettings, double sampleRate)
+{
+    return juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate,
         chainSettings.midPeakFreq,
         chainSettings.midPeakQuality,
         juce::Decibels::decibelsToGain(chainSettings.midPeakGainInDecibels));
-
-    updateCoefficients(leftChain.get<ChainPositions::MidPeak>().coefficients, midPeakCoefficients);
-    updateCoefficients(rightChain.get<ChainPositions::MidPeak>().coefficients, midPeakCoefficients);
-
-    auto midhighPeakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(),
+}
+Coefficients makeMidHighPeakFilter(const ChainSettings& chainSettings, double sampleRate)
+{
+    return juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate,
         chainSettings.midhighPeakFreq,
         chainSettings.midhighPeakQuality,
         juce::Decibels::decibelsToGain(chainSettings.midhighPeakGainInDecibels));
-
-    updateCoefficients(leftChain.get<ChainPositions::MidHighPeak>().coefficients, midhighPeakCoefficients);
-    updateCoefficients(rightChain.get<ChainPositions::MidHighPeak>().coefficients, midhighPeakCoefficients);
-
-    auto highPeakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(),
+}
+Coefficients makeHighPeakFilter(const ChainSettings& chainSettings, double sampleRate)
+{
+    return juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate,
         chainSettings.highPeakFreq,
         chainSettings.highPeakQuality,
         juce::Decibels::decibelsToGain(chainSettings.highPeakGainInDecibels));
+}
 
+void TradeMarkEQAudioProcessor::updatePeakFilters(const ChainSettings& chainSettings)
+{
+    auto lowPeakCoefficients = makeLowPeakFilter(chainSettings, getSampleRate());
+    updateCoefficients(leftChain.get<ChainPositions::LowPeak>().coefficients, lowPeakCoefficients);
+    updateCoefficients(rightChain.get<ChainPositions::LowPeak>().coefficients, lowPeakCoefficients);
+
+    auto midlowPeakCoefficients = makeMidLowPeakFilter(chainSettings, getSampleRate());
+    updateCoefficients(leftChain.get<ChainPositions::MidLowPeak>().coefficients, midlowPeakCoefficients);
+    updateCoefficients(rightChain.get<ChainPositions::MidLowPeak>().coefficients, midlowPeakCoefficients);
+
+    auto midPeakCoefficients = makeMidPeakFilter(chainSettings, getSampleRate());
+    updateCoefficients(leftChain.get<ChainPositions::MidPeak>().coefficients, midPeakCoefficients);
+    updateCoefficients(rightChain.get<ChainPositions::MidPeak>().coefficients, midPeakCoefficients);
+
+    auto midhighPeakCoefficients = makeMidHighPeakFilter(chainSettings, getSampleRate());
+    updateCoefficients(leftChain.get<ChainPositions::MidHighPeak>().coefficients, midhighPeakCoefficients);
+    updateCoefficients(rightChain.get<ChainPositions::MidHighPeak>().coefficients, midhighPeakCoefficients);
+
+    auto highPeakCoefficients = makeHighPeakFilter(chainSettings, getSampleRate());
     updateCoefficients(leftChain.get<ChainPositions::HighPeak>().coefficients, highPeakCoefficients);
     updateCoefficients(rightChain.get<ChainPositions::HighPeak>().coefficients, highPeakCoefficients);
 }
 
-void TradeMarkEQAudioProcessor::updateCoefficients(Coefficients& old, const Coefficients& replacements)
+void updateCoefficients(Coefficients& old, const Coefficients& replacements)
 {
     *old = *replacements;
 }
@@ -299,7 +316,6 @@ void TradeMarkEQAudioProcessor::updateLowCutFilters(const ChainSettings& chainSe
         designIIRHighpassHighOrderButterworthMethod(chainSettings.lowCutFreq,
             getSampleRate(),
             2 * (chainSettings.lowCutSlope + 1));
-
 
     auto& leftLowCut = leftChain.get<ChainPositions::LowCut>();
     auto& rightLowCut = rightChain.get<ChainPositions::LowCut>();
