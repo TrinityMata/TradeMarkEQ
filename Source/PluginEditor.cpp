@@ -39,11 +39,24 @@ TradeMarkEQAudioProcessorEditor::TradeMarkEQAudioProcessorEditor (TradeMarkEQAud
         addAndMakeVisible(comp);
     }
 
+    const auto& params = audioProcessor.getParameters();
+    for (auto param : params)
+    {
+        param->addListener(this);
+    }
+
+    startTimerHz(60);
+
     setSize(600, 400);
 }
 
 TradeMarkEQAudioProcessorEditor::~TradeMarkEQAudioProcessorEditor()
 {
+    const auto& params = audioProcessor.getParameters();
+    for (auto param : params)
+    {
+        param->removeListener(this);
+    }
 }
 
 //==============================================================================
@@ -76,7 +89,7 @@ void TradeMarkEQAudioProcessorEditor::paint (juce::Graphics& g)
     for (int i = 0; i < w; ++i)
     {
         double mag = 1.f;
-        auto freq = mapToLog10(double(i) / double(w), 20.0, 2000.0);
+        auto freq = mapToLog10(double(i) / double(w), 20.0, 20000.0);
 
         if (!monoChain.isBypassed<ChainPositions::LowPeak>())
             mag *= lowpeak.coefficients->getMagnitudeForFrequency(freq, sampleRate);
@@ -166,8 +179,22 @@ void TradeMarkEQAudioProcessorEditor::timerCallback()
 {
     if (parametersChanged.compareAndSetBool(false, true))
     {
+        DBG("params changed");
         //update the monochain
+        auto chainSettings = getChainSettings(audioProcessor.apvts);
+        auto lowPeakCoefficients = makeLowPeakFilter(chainSettings, audioProcessor.getSampleRate());
+        updateCoefficients(monoChain.get<ChainPositions::LowPeak>().coefficients, lowPeakCoefficients);
+        auto midlowPeakCoefficients = makeMidLowPeakFilter(chainSettings, audioProcessor.getSampleRate());
+        updateCoefficients(monoChain.get<ChainPositions::MidLowPeak>().coefficients, midlowPeakCoefficients);
+        auto midPeakCoefficients = makeMidPeakFilter(chainSettings, audioProcessor.getSampleRate());
+        updateCoefficients(monoChain.get<ChainPositions::MidPeak>().coefficients, midPeakCoefficients);
+        auto midhighPeakCoefficients = makeMidHighPeakFilter(chainSettings, audioProcessor.getSampleRate());
+        updateCoefficients(monoChain.get<ChainPositions::MidHighPeak>().coefficients, midhighPeakCoefficients);
+        auto highPeakCoefficients = makeHighPeakFilter(chainSettings, audioProcessor.getSampleRate());
+        updateCoefficients(monoChain.get<ChainPositions::HighPeak>().coefficients, highPeakCoefficients);
+
         //signal a repaint
+        repaint();
     }
 }
 
