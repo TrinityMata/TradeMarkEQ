@@ -79,10 +79,10 @@ void RotarySliderWithLabels::paint(juce::Graphics& g)
     auto sliderBounds = getSliderBounds();
 
     // Grid lines
-    g.setColour(Colours::red);
-    g.drawRect(getLocalBounds());
-    g.setColour(Colours::yellow);
-    g.drawRect(sliderBounds);
+    //g.setColour(Colours::red);
+    //g.drawRect(getLocalBounds());
+    //g.setColour(Colours::yellow);
+    //g.drawRect(sliderBounds);
 
     getLookAndFeel().drawRotarySlider(g,
         sliderBounds.getX(),
@@ -93,6 +93,32 @@ void RotarySliderWithLabels::paint(juce::Graphics& g)
         startAng,
         endAng,
         *this);
+
+    auto center = sliderBounds.toFloat().getCentre();
+    auto radius = sliderBounds.getWidth() * 0.5f;
+
+    g.setColour(Colour(0u, 172u, 1u));
+    g.setFont(getTextHeight());
+
+    auto numChoices = labels.size();
+    for (int i = 0; i < numChoices; ++i)
+    {
+        auto pos = labels[i].pos;
+        jassert(0.f <= pos);
+        jassert(pos <= 1.f);
+
+        auto ang = jmap(pos, 0.f, 1.f, startAng, endAng);
+
+        auto c = center.getPointOnCircumference(radius + getTextHeight() * 0.5f + 1, ang);
+
+        Rectangle<float> r;
+        auto str = labels[i].label;
+        r.setSize(g.getCurrentFont().getStringWidth(str), getTextHeight());
+        r.setCentre(c);
+        r.setY(r.getY() + getTextHeight());
+
+        g.drawFittedText(str, r.toNearestInt(), juce::Justification::centred, 1);
+    }
 }
 
 juce::Rectangle<int> RotarySliderWithLabels::getSliderBounds() const
@@ -154,6 +180,8 @@ ResponseCurveComponent::ResponseCurveComponent(TradeMarkEQAudioProcessor& p) : a
         param->addListener(this);
     }
 
+    updateChain();
+
     startTimerHz(60);
 }
 
@@ -176,27 +204,34 @@ void ResponseCurveComponent::timerCallback()
     {
         DBG("params changed");
         //update the monochain
-        auto chainSettings = getChainSettings(audioProcessor.apvts);
-        auto lowPeakCoefficients = makeLowPeakFilter(chainSettings, audioProcessor.getSampleRate());
-        updateCoefficients(monoChain.get<ChainPositions::LowPeak>().coefficients, lowPeakCoefficients);
-        auto midlowPeakCoefficients = makeMidLowPeakFilter(chainSettings, audioProcessor.getSampleRate());
-        updateCoefficients(monoChain.get<ChainPositions::MidLowPeak>().coefficients, midlowPeakCoefficients);
-        auto midPeakCoefficients = makeMidPeakFilter(chainSettings, audioProcessor.getSampleRate());
-        updateCoefficients(monoChain.get<ChainPositions::MidPeak>().coefficients, midPeakCoefficients);
-        auto midhighPeakCoefficients = makeMidHighPeakFilter(chainSettings, audioProcessor.getSampleRate());
-        updateCoefficients(monoChain.get<ChainPositions::MidHighPeak>().coefficients, midhighPeakCoefficients);
-        auto highPeakCoefficients = makeHighPeakFilter(chainSettings, audioProcessor.getSampleRate());
-        updateCoefficients(monoChain.get<ChainPositions::HighPeak>().coefficients, highPeakCoefficients);
-
-        auto lowCutCoefficients = makeLowCutFilter(chainSettings, audioProcessor.getSampleRate());
-        auto highCutCoefficients = makeHighCutFilter(chainSettings, audioProcessor.getSampleRate());
-
-        updateCutFilter(monoChain.get<ChainPositions::LowCut>(), lowCutCoefficients, chainSettings.lowCutSlope);
-        updateCutFilter(monoChain.get<ChainPositions::HighCut>(), highCutCoefficients, chainSettings.highCutSlope);
+        updateChain();
 
         //signal a repaint
         repaint();
     }
+}
+
+void ResponseCurveComponent::updateChain()
+{
+    auto chainSettings = getChainSettings(audioProcessor.apvts);
+
+    auto lowPeakCoefficients = makeLowPeakFilter(chainSettings, audioProcessor.getSampleRate());
+    updateCoefficients(monoChain.get<ChainPositions::LowPeak>().coefficients, lowPeakCoefficients);
+    auto midlowPeakCoefficients = makeMidLowPeakFilter(chainSettings, audioProcessor.getSampleRate());
+    updateCoefficients(monoChain.get<ChainPositions::MidLowPeak>().coefficients, midlowPeakCoefficients);
+    auto midPeakCoefficients = makeMidPeakFilter(chainSettings, audioProcessor.getSampleRate());
+    updateCoefficients(monoChain.get<ChainPositions::MidPeak>().coefficients, midPeakCoefficients);
+    auto midhighPeakCoefficients = makeMidHighPeakFilter(chainSettings, audioProcessor.getSampleRate());
+    updateCoefficients(monoChain.get<ChainPositions::MidHighPeak>().coefficients, midhighPeakCoefficients);
+    auto highPeakCoefficients = makeHighPeakFilter(chainSettings, audioProcessor.getSampleRate());
+    updateCoefficients(monoChain.get<ChainPositions::HighPeak>().coefficients, highPeakCoefficients);
+
+    auto lowCutCoefficients = makeLowCutFilter(chainSettings, audioProcessor.getSampleRate());
+    auto highCutCoefficients = makeHighCutFilter(chainSettings, audioProcessor.getSampleRate());
+
+    updateCutFilter(monoChain.get<ChainPositions::LowCut>(), lowCutCoefficients, chainSettings.lowCutSlope);
+    updateCutFilter(monoChain.get<ChainPositions::HighCut>(), highCutCoefficients, chainSettings.highCutSlope);
+
 }
 
 void ResponseCurveComponent::paint(juce::Graphics& g)
