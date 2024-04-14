@@ -510,34 +510,34 @@ TradeMarkEQAudioProcessorEditor::TradeMarkEQAudioProcessorEditor(TradeMarkEQAudi
     // editor's size to whatever you need it to be.
 
     lowPeakFreqSlider.labels.add({ 0.f, "20Hz" });
-    lowPeakFreqSlider.labels.add({ 1.f, "20kHz" });
+    lowPeakFreqSlider.labels.add({ 1.f, "500Hz" });
     lowPeakGainSlider.labels.add({ 0.f, "-12dB" });
     lowPeakGainSlider.labels.add({ 1.f, "12dB" });
     lowPeakQualitySlider.labels.add({ 0.f, "0.1" });
     lowPeakQualitySlider.labels.add({ 1.f, "10.0" });
 
-    midlowPeakFreqSlider.labels.add({ 0.f, "20Hz" });
-    midlowPeakFreqSlider.labels.add({ 1.f, "20kHz" });
+    midlowPeakFreqSlider.labels.add({ 0.f, "40Hz" });
+    midlowPeakFreqSlider.labels.add({ 1.f, "1kHz" });
     midlowPeakGainSlider.labels.add({ 0.f, "-12dB" });
     midlowPeakGainSlider.labels.add({ 1.f, "12dB" });
     midlowPeakQualitySlider.labels.add({ 0.f, "0.1" });
     midlowPeakQualitySlider.labels.add({ 1.f, "10.0" });
 
-    midPeakFreqSlider.labels.add({ 0.f, "20Hz" });
-    midPeakFreqSlider.labels.add({ 1.f, "20kHz" });
+    midPeakFreqSlider.labels.add({ 0.f, "125Hz" });
+    midPeakFreqSlider.labels.add({ 1.f, "8kHz" });
     midPeakGainSlider.labels.add({ 0.f, "-12dB" });
     midPeakGainSlider.labels.add({ 1.f, "12dB" });
     midPeakQualitySlider.labels.add({ 0.f, "0.1" });
     midPeakQualitySlider.labels.add({ 1.f, "10.0" });
 
-    midhighPeakFreqSlider.labels.add({ 0.f, "20Hz" });
-    midhighPeakFreqSlider.labels.add({ 1.f, "20kHz" });
+    midhighPeakFreqSlider.labels.add({ 0.f, "200Hz" });
+    midhighPeakFreqSlider.labels.add({ 1.f, "18kHz" });
     midhighPeakGainSlider.labels.add({ 0.f, "-12dB" });
     midhighPeakGainSlider.labels.add({ 1.f, "12dB" });
     midhighPeakQualitySlider.labels.add({ 0.f, "0.1" });
     midhighPeakQualitySlider.labels.add({ 1.f, "10.0" });
 
-    highPeakFreqSlider.labels.add({ 0.f, "20Hz" });
+    highPeakFreqSlider.labels.add({ 0.f, "2kHz" });
     highPeakFreqSlider.labels.add({ 1.f, "20kHz" });
     highPeakGainSlider.labels.add({ 0.f, "-12dB" });
     highPeakGainSlider.labels.add({ 1.f, "12dB" });
@@ -590,9 +590,9 @@ void TradeMarkEQAudioProcessorEditor::resized()
 
     responseCurveComponent.setBounds(responseArea);
 
-    bounds.removeFromTop(5); //Creates space between response curve and sliders
+    bounds.removeFromTop(15); //Creates space between response curve and sliders
 
-    auto peakArea = bounds.removeFromTop(bounds.getHeight() * 0.5);
+    auto peakArea = bounds.removeFromTop(bounds.getHeight() * 0.6);
 
     auto lowPeakArea = peakArea.removeFromLeft(peakArea.getWidth() * 0.2);
     lowPeakFreqSlider.setBounds(lowPeakArea.removeFromTop(lowPeakArea.getHeight() * 0.33));
@@ -623,9 +623,13 @@ void TradeMarkEQAudioProcessorEditor::resized()
     auto highCutArea = bounds.removeFromRight(bounds.getWidth());
 
     lowCutFreqSlider.setBounds(lowCutArea.removeFromLeft(lowCutArea.getWidth() * 0.5));
+    lowCutArea.removeFromTop(lowCutArea.getHeight() * 0.33);
+    lowCutArea.removeFromRight(lowCutArea.getWidth() * 0.33);
     lowCutSlopeSlider.setBounds(lowCutArea);
 
     highCutFreqSlider.setBounds(highCutArea.removeFromRight(highCutArea.getWidth() * 0.5));
+    highCutArea.removeFromTop(highCutArea.getHeight() * 0.33);
+    highCutArea.removeFromLeft(highCutArea.getWidth() * 0.33);
     highCutSlopeSlider.setBounds(highCutArea);
 
     
