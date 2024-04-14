@@ -243,9 +243,7 @@ void ResponseCurveComponent::paint(juce::Graphics& g)
 
     g.drawImage(background, getLocalBounds().toFloat());
 
-    //auto responseArea = getLocalBounds();
-
-    auto responseArea = getAnalysisArea(); //getRenderArea();
+    auto responseArea = getAnalysisArea(); 
 
     auto w = responseArea.getWidth();
 
@@ -306,7 +304,7 @@ void ResponseCurveComponent::paint(juce::Graphics& g)
     const double outputMax = responseArea.getY();
     auto map = [outputMin, outputMax](double input)
         {
-            return jmap(input, -24.0, 24.0, outputMin, outputMax);
+            return jmap(input, -12.0, 12.0, outputMin, outputMax);
         };
 
     responsiveCurve.startNewSubPath(responseArea.getX(), map(mags.front()));
@@ -354,28 +352,24 @@ void ResponseCurveComponent::resized()
     }
 
     g.setColour(Colours::dimgrey);
-    //for (auto f : freqs)
+    
     for (auto x : xs)
     {
-        //auto normX = mapFromLog10(f, 20.f, 20000.f);
-       // g.drawVerticalLine(getWidth() * normX, 0.f, getHeight());
         g.drawVerticalLine(x, float(top), float(bottom));
     }
 
     Array<float> gain
     {
-        -24, -12, 0, 12, 24
+        -12, -6, 0, 6, 12
     };
 
     for (auto gDB : gain)
     {
-        auto y = jmap(gDB, -24.f, 24.f, float(bottom), float(top));
-        //g.drawHorizontalLine(y, 0, getWidth());
+        auto y = jmap(gDB, -12.f, 12.f, float(bottom), float(top));
+        
         g.setColour(gDB == 0.f ? Colour(0u, 172u, 1u) : Colours::darkgrey);
         g.drawHorizontalLine(y, left, right);
     }
-
-    //g.drawRect(getAnalysisArea());
 
     g.setColour(Colours::lightgrey);
     const int fontHeight = 10;
@@ -412,7 +406,7 @@ void ResponseCurveComponent::resized()
 
     for (auto gDB : gain)
     {
-        auto y = jmap(gDB, -24.f, 24.f, float(bottom), float(top));
+        auto y = jmap(gDB, -12.f, 12.f, float(bottom), float(top));
 
         String str;
         if (gDB > 0)
@@ -428,6 +422,15 @@ void ResponseCurveComponent::resized()
 
         g.setColour(gDB == 0.f ? Colour(0u, 172u, 1u) : Colours::lightgrey);
 
+        g.drawFittedText(str, r, juce::Justification::centred, 1);
+
+        str.clear();
+        str << (gDB - 12.f);
+
+        r.setX(1);
+        textWidth = g.getCurrentFont().getStringWidth(str);
+        r.setSize(textWidth, fontHeight);
+        g.setColour(Colours::lightgrey);
         g.drawFittedText(str, r, juce::Justification::centred, 1);
 
     }
@@ -508,36 +511,36 @@ TradeMarkEQAudioProcessorEditor::TradeMarkEQAudioProcessorEditor(TradeMarkEQAudi
 
     lowPeakFreqSlider.labels.add({ 0.f, "20Hz" });
     lowPeakFreqSlider.labels.add({ 1.f, "20kHz" });
-    lowPeakGainSlider.labels.add({ 0.f, "-24dB" });
-    lowPeakGainSlider.labels.add({ 1.f, "24dB" });
+    lowPeakGainSlider.labels.add({ 0.f, "-12dB" });
+    lowPeakGainSlider.labels.add({ 1.f, "12dB" });
     lowPeakQualitySlider.labels.add({ 0.f, "0.1" });
     lowPeakQualitySlider.labels.add({ 1.f, "10.0" });
 
     midlowPeakFreqSlider.labels.add({ 0.f, "20Hz" });
     midlowPeakFreqSlider.labels.add({ 1.f, "20kHz" });
-    midlowPeakGainSlider.labels.add({ 0.f, "-24dB" });
-    midlowPeakGainSlider.labels.add({ 1.f, "24dB" });
+    midlowPeakGainSlider.labels.add({ 0.f, "-12dB" });
+    midlowPeakGainSlider.labels.add({ 1.f, "12dB" });
     midlowPeakQualitySlider.labels.add({ 0.f, "0.1" });
     midlowPeakQualitySlider.labels.add({ 1.f, "10.0" });
 
     midPeakFreqSlider.labels.add({ 0.f, "20Hz" });
     midPeakFreqSlider.labels.add({ 1.f, "20kHz" });
-    midPeakGainSlider.labels.add({ 0.f, "-24dB" });
-    midPeakGainSlider.labels.add({ 1.f, "24dB" });
+    midPeakGainSlider.labels.add({ 0.f, "-12dB" });
+    midPeakGainSlider.labels.add({ 1.f, "12dB" });
     midPeakQualitySlider.labels.add({ 0.f, "0.1" });
     midPeakQualitySlider.labels.add({ 1.f, "10.0" });
 
     midhighPeakFreqSlider.labels.add({ 0.f, "20Hz" });
     midhighPeakFreqSlider.labels.add({ 1.f, "20kHz" });
-    midhighPeakGainSlider.labels.add({ 0.f, "-24dB" });
-    midhighPeakGainSlider.labels.add({ 1.f, "24dB" });
+    midhighPeakGainSlider.labels.add({ 0.f, "-12dB" });
+    midhighPeakGainSlider.labels.add({ 1.f, "12dB" });
     midhighPeakQualitySlider.labels.add({ 0.f, "0.1" });
     midhighPeakQualitySlider.labels.add({ 1.f, "10.0" });
 
     highPeakFreqSlider.labels.add({ 0.f, "20Hz" });
     highPeakFreqSlider.labels.add({ 1.f, "20kHz" });
-    highPeakGainSlider.labels.add({ 0.f, "-24dB" });
-    highPeakGainSlider.labels.add({ 1.f, "24dB" });
+    highPeakGainSlider.labels.add({ 0.f, "-12dB" });
+    highPeakGainSlider.labels.add({ 1.f, "12dB" });
     highPeakQualitySlider.labels.add({ 0.f, "0.1" });
     highPeakQualitySlider.labels.add({ 1.f, "10.0" });
 
