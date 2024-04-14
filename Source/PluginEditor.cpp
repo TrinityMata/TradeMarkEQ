@@ -79,10 +79,10 @@ void RotarySliderWithLabels::paint(juce::Graphics& g)
     auto sliderBounds = getSliderBounds();
 
     // Grid lines
-    //g.setColour(Colours::red);
-    //g.drawRect(getLocalBounds());
-    //g.setColour(Colours::yellow);
-    //g.drawRect(sliderBounds);
+    g.setColour(Colours::red);
+    g.drawRect(getLocalBounds());
+    g.setColour(Colours::yellow);
+    g.drawRect(sliderBounds);
 
     getLookAndFeel().drawRotarySlider(g,
         sliderBounds.getX(),
@@ -561,7 +561,7 @@ TradeMarkEQAudioProcessorEditor::TradeMarkEQAudioProcessorEditor(TradeMarkEQAudi
         addAndMakeVisible(comp);
     }
 
-    setSize(600, 480);
+    setSize(650, 500);
 }
 
 TradeMarkEQAudioProcessorEditor::~TradeMarkEQAudioProcessorEditor()
@@ -592,18 +592,43 @@ void TradeMarkEQAudioProcessorEditor::resized()
 
     bounds.removeFromTop(5); //Creates space between response curve and sliders
 
-    auto lowCutArea = bounds.removeFromLeft(bounds.getWidth() * 0.33);
-    auto highCutArea = bounds.removeFromRight(bounds.getWidth() * 0.5);
+    auto peakArea = bounds.removeFromTop(bounds.getHeight() * 0.5);
 
-    lowCutFreqSlider.setBounds(lowCutArea.removeFromTop(lowCutArea.getHeight() * 0.5));
+    auto lowPeakArea = peakArea.removeFromLeft(peakArea.getWidth() * 0.2);
+    lowPeakFreqSlider.setBounds(lowPeakArea.removeFromTop(lowPeakArea.getHeight() * 0.33));
+    lowPeakGainSlider.setBounds(lowPeakArea.removeFromTop(lowPeakArea.getHeight() * 0.5));
+    lowPeakQualitySlider.setBounds(lowPeakArea);
+
+    auto midlowPeakArea = peakArea.removeFromLeft(peakArea.getWidth() * 0.25);
+    midlowPeakFreqSlider.setBounds(midlowPeakArea.removeFromTop(midlowPeakArea.getHeight() * 0.33));
+    midlowPeakGainSlider.setBounds(midlowPeakArea.removeFromTop(midlowPeakArea.getHeight() * 0.5));
+    midlowPeakQualitySlider.setBounds(midlowPeakArea);
+
+    auto midPeakArea = peakArea.removeFromLeft(peakArea.getWidth() * 0.33);
+    midPeakFreqSlider.setBounds(midPeakArea.removeFromTop(midPeakArea.getHeight() * 0.33));
+    midPeakGainSlider.setBounds(midPeakArea.removeFromTop(midPeakArea.getHeight() * 0.5));
+    midPeakQualitySlider.setBounds(midPeakArea);
+
+    auto midhighPeakArea = peakArea.removeFromLeft(peakArea.getWidth() * 0.5);
+    midhighPeakFreqSlider.setBounds(midhighPeakArea.removeFromTop(midhighPeakArea.getHeight() * 0.33));
+    midhighPeakGainSlider.setBounds(midhighPeakArea.removeFromTop(midhighPeakArea.getHeight() * 0.5));
+    midhighPeakQualitySlider.setBounds(midhighPeakArea);
+
+    auto highPeakArea = peakArea.removeFromLeft(peakArea.getWidth());
+    highPeakFreqSlider.setBounds(highPeakArea.removeFromTop(highPeakArea.getHeight() * 0.33));
+    highPeakGainSlider.setBounds(highPeakArea.removeFromTop(highPeakArea.getHeight() * 0.5));
+    highPeakQualitySlider.setBounds(highPeakArea);
+
+    auto lowCutArea = bounds.removeFromLeft(bounds.getWidth() * 0.5);
+    auto highCutArea = bounds.removeFromRight(bounds.getWidth());
+
+    lowCutFreqSlider.setBounds(lowCutArea.removeFromLeft(lowCutArea.getWidth() * 0.5));
     lowCutSlopeSlider.setBounds(lowCutArea);
 
-    highCutFreqSlider.setBounds(highCutArea.removeFromTop(highCutArea.getHeight() * 0.5));
+    highCutFreqSlider.setBounds(highCutArea.removeFromRight(highCutArea.getWidth() * 0.5));
     highCutSlopeSlider.setBounds(highCutArea);
 
-    lowPeakFreqSlider.setBounds(bounds.removeFromTop(bounds.getHeight() * 0.33));
-    lowPeakGainSlider.setBounds(bounds.removeFromTop(bounds.getHeight() * 0.5));
-    lowPeakQualitySlider.setBounds(bounds);
+    
 
 }
 
