@@ -367,12 +367,59 @@ TradeMarkEQAudioProcessorEditor::TradeMarkEQAudioProcessorEditor(TradeMarkEQAudi
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
 
+    lowPeakFreqSlider.labels.add({ 0.f, "20Hz" });
+    lowPeakFreqSlider.labels.add({ 1.f, "20kHz" });
+    lowPeakGainSlider.labels.add({ 0.f, "-24dB" });
+    lowPeakGainSlider.labels.add({ 1.f, "24dB" });
+    lowPeakQualitySlider.labels.add({ 0.f, "0.1" });
+    lowPeakQualitySlider.labels.add({ 1.f, "10.0" });
+
+    midlowPeakFreqSlider.labels.add({ 0.f, "20Hz" });
+    midlowPeakFreqSlider.labels.add({ 1.f, "20kHz" });
+    midlowPeakGainSlider.labels.add({ 0.f, "-24dB" });
+    midlowPeakGainSlider.labels.add({ 1.f, "24dB" });
+    midlowPeakQualitySlider.labels.add({ 0.f, "0.1" });
+    midlowPeakQualitySlider.labels.add({ 1.f, "10.0" });
+
+    midPeakFreqSlider.labels.add({ 0.f, "20Hz" });
+    midPeakFreqSlider.labels.add({ 1.f, "20kHz" });
+    midPeakGainSlider.labels.add({ 0.f, "-24dB" });
+    midPeakGainSlider.labels.add({ 1.f, "24dB" });
+    midPeakQualitySlider.labels.add({ 0.f, "0.1" });
+    midPeakQualitySlider.labels.add({ 1.f, "10.0" });
+
+    midhighPeakFreqSlider.labels.add({ 0.f, "20Hz" });
+    midhighPeakFreqSlider.labels.add({ 1.f, "20kHz" });
+    midhighPeakGainSlider.labels.add({ 0.f, "-24dB" });
+    midhighPeakGainSlider.labels.add({ 1.f, "24dB" });
+    midhighPeakQualitySlider.labels.add({ 0.f, "0.1" });
+    midhighPeakQualitySlider.labels.add({ 1.f, "10.0" });
+
+    highPeakFreqSlider.labels.add({ 0.f, "20Hz" });
+    highPeakFreqSlider.labels.add({ 1.f, "20kHz" });
+    highPeakGainSlider.labels.add({ 0.f, "-24dB" });
+    highPeakGainSlider.labels.add({ 1.f, "24dB" });
+    highPeakQualitySlider.labels.add({ 0.f, "0.1" });
+    highPeakQualitySlider.labels.add({ 1.f, "10.0" });
+
+    lowCutFreqSlider.labels.add({ 0.f, "20Hz" });
+    lowCutFreqSlider.labels.add({ 1.f, "20kHz" });
+
+    highCutFreqSlider.labels.add({ 0.f, "20Hz" });
+    highCutFreqSlider.labels.add({ 1.f, "20kHz" });
+
+    lowCutSlopeSlider.labels.add({ 0.f, "12" });
+    lowCutSlopeSlider.labels.add({ 1.f, "48" });
+
+    highCutSlopeSlider.labels.add({ 0.f, "12" });
+    highCutSlopeSlider.labels.add({ 1.f, "48" });
+
     for (auto* comp : getComps())
     {
         addAndMakeVisible(comp);
     }
 
-    setSize(600, 400);
+    setSize(600, 480);
 }
 
 TradeMarkEQAudioProcessorEditor::~TradeMarkEQAudioProcessorEditor()
@@ -396,9 +443,12 @@ void TradeMarkEQAudioProcessorEditor::resized()
     // subcomponents in your editor..
 
     auto bounds = getLocalBounds();
-    auto responseArea = bounds.removeFromTop(bounds.getHeight() * 0.33);
+    float hRatio = 25.f / 100.f; // JUCE_LIVE_CONSTANT(33) / 100.f;
+    auto responseArea = bounds.removeFromTop(bounds.getHeight() * hRatio);
 
     responseCurveComponent.setBounds(responseArea);
+
+    bounds.removeFromTop(5); //Creates space between response curve and sliders
 
     auto lowCutArea = bounds.removeFromLeft(bounds.getWidth() * 0.33);
     auto highCutArea = bounds.removeFromRight(bounds.getWidth() * 0.5);
