@@ -242,6 +242,14 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts)
     settings.lowCutSlope = static_cast<Slope>(apvts.getRawParameterValue("LowCut Slope")->load());
     settings.highCutSlope = static_cast<Slope>(apvts.getRawParameterValue("HighCut Slope")->load());
 
+    settings.lowCutBypassed = apvts.getRawParameterValue("LowCut Bypassed")->load();
+    settings.lowPeakBypassed = apvts.getRawParameterValue("LowPeak Bypassed")->load();
+    settings.midlowPeakBypassed = apvts.getRawParameterValue("MidLowPeak Bypassed")->load();
+    settings.midPeakBypassed = apvts.getRawParameterValue("MidPeak Bypassed")->load();
+    settings.midhighPeakBypassed = apvts.getRawParameterValue("MidHighPeak Bypassed")->load();
+    settings.highPeakBypassed = apvts.getRawParameterValue("HighPeak Bypassed")->load();
+    settings.highCutBypassed = apvts.getRawParameterValue("HighCut Bypassed")->load();
+
     return settings;
 }
 
@@ -285,22 +293,32 @@ Coefficients makeHighPeakFilter(const ChainSettings& chainSettings, double sampl
 void TradeMarkEQAudioProcessor::updatePeakFilters(const ChainSettings& chainSettings)
 {
     auto lowPeakCoefficients = makeLowPeakFilter(chainSettings, getSampleRate());
+    leftChain.setBypassed<ChainPositions::LowPeak>(chainSettings.lowPeakBypassed);
+    rightChain.setBypassed<ChainPositions::LowPeak>(chainSettings.lowPeakBypassed);
     updateCoefficients(leftChain.get<ChainPositions::LowPeak>().coefficients, lowPeakCoefficients);
     updateCoefficients(rightChain.get<ChainPositions::LowPeak>().coefficients, lowPeakCoefficients);
 
     auto midlowPeakCoefficients = makeMidLowPeakFilter(chainSettings, getSampleRate());
+    leftChain.setBypassed<ChainPositions::MidLowPeak>(chainSettings.midlowPeakBypassed);
+    rightChain.setBypassed<ChainPositions::MidLowPeak>(chainSettings.midlowPeakBypassed);
     updateCoefficients(leftChain.get<ChainPositions::MidLowPeak>().coefficients, midlowPeakCoefficients);
     updateCoefficients(rightChain.get<ChainPositions::MidLowPeak>().coefficients, midlowPeakCoefficients);
 
     auto midPeakCoefficients = makeMidPeakFilter(chainSettings, getSampleRate());
+    leftChain.setBypassed<ChainPositions::MidPeak>(chainSettings.midPeakBypassed);
+    rightChain.setBypassed<ChainPositions::MidPeak>(chainSettings.midPeakBypassed);
     updateCoefficients(leftChain.get<ChainPositions::MidPeak>().coefficients, midPeakCoefficients);
     updateCoefficients(rightChain.get<ChainPositions::MidPeak>().coefficients, midPeakCoefficients);
 
     auto midhighPeakCoefficients = makeMidHighPeakFilter(chainSettings, getSampleRate());
+    leftChain.setBypassed<ChainPositions::MidHighPeak>(chainSettings.midhighPeakBypassed);
+    rightChain.setBypassed<ChainPositions::MidHighPeak>(chainSettings.midhighPeakBypassed);
     updateCoefficients(leftChain.get<ChainPositions::MidHighPeak>().coefficients, midhighPeakCoefficients);
     updateCoefficients(rightChain.get<ChainPositions::MidHighPeak>().coefficients, midhighPeakCoefficients);
 
     auto highPeakCoefficients = makeHighPeakFilter(chainSettings, getSampleRate());
+    leftChain.setBypassed<ChainPositions::HighPeak>(chainSettings.highPeakBypassed);
+    rightChain.setBypassed<ChainPositions::HighPeak>(chainSettings.highPeakBypassed);
     updateCoefficients(leftChain.get<ChainPositions::HighPeak>().coefficients, highPeakCoefficients);
     updateCoefficients(rightChain.get<ChainPositions::HighPeak>().coefficients, highPeakCoefficients);
 }
@@ -314,6 +332,9 @@ void TradeMarkEQAudioProcessor::updateLowCutFilters(const ChainSettings& chainSe
 {
     auto cutCoefficients = makeLowCutFilter(chainSettings, getSampleRate());
 
+    leftChain.setBypassed<ChainPositions::LowCut>(chainSettings.lowCutBypassed);
+    rightChain.setBypassed<ChainPositions::LowCut>(chainSettings.lowCutBypassed);
+
     auto& leftLowCut = leftChain.get<ChainPositions::LowCut>();
     auto& rightLowCut = rightChain.get<ChainPositions::LowCut>();
 
@@ -324,6 +345,9 @@ void TradeMarkEQAudioProcessor::updateLowCutFilters(const ChainSettings& chainSe
 void TradeMarkEQAudioProcessor::updateHighCutFilters(const ChainSettings& chainSettings)
 {
     auto highCutCoefficients = makeHighCutFilter(chainSettings, getSampleRate());
+
+    leftChain.setBypassed<ChainPositions::HighCut>(chainSettings.highCutBypassed);
+    rightChain.setBypassed<ChainPositions::HighCut>(chainSettings.highCutBypassed);
 
     auto& leftHighCut = leftChain.get<ChainPositions::HighCut>();
     auto& rightHighCut = rightChain.get<ChainPositions::HighCut>();
@@ -467,6 +491,14 @@ juce::AudioProcessorValueTreeState::ParameterLayout TradeMarkEQAudioProcessor::c
     //HPF & LPF Slopes
     layout.add(std::make_unique < juce::AudioParameterChoice>("LowCut Slope", "LowCut Slope", stringArray, 0));
     layout.add(std::make_unique < juce::AudioParameterChoice>("HighCut Slope", "HighCut Slope", stringArray, 0));
+
+    layout.add(std::make_unique<juce::AudioParameterBool>("LowCut Bypassed", "LowCut Bypassed", false));
+    layout.add(std::make_unique<juce::AudioParameterBool>("LowPeak Bypassed", "LowPeak Bypassed", false));
+    layout.add(std::make_unique<juce::AudioParameterBool>("MidLowPeak Bypassed", "MidLowPeak Bypassed", false));
+    layout.add(std::make_unique<juce::AudioParameterBool>("MidPeak Bypassed", "MidPeak Bypassed", false));
+    layout.add(std::make_unique<juce::AudioParameterBool>("MidHighPeak Bypassed", "MidHighPeak Bypassed", false));
+    layout.add(std::make_unique<juce::AudioParameterBool>("HighPeak Bypassed", "HighPeak Bypassed", false));
+    layout.add(std::make_unique<juce::AudioParameterBool>("HighCut Bypassed", "HighCut Bypassed", false));
 
     return layout;
 }
