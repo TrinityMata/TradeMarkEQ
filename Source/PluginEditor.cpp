@@ -23,10 +23,12 @@ void LookAndFeel::drawRotarySlider(juce::Graphics& g,
 
     auto bounds = Rectangle<float>(x, y, width, height);
 
-    g.setColour(Colour(97u, 18u, 167u));
+    auto enabled = slider.isEnabled();
+
+    g.setColour(enabled ? Colour(97u, 18u, 167u) : Colours::darkgrey);
     g.fillEllipse(bounds);
 
-    g.setColour(Colour(255u, 154u, 1u));
+    g.setColour(enabled ? Colour(255u, 154u, 1u) : Colours::grey);
     g.drawEllipse(bounds, 1.f);
 
     if (auto* rswl = dynamic_cast<RotarySliderWithLabels*>(&slider))
@@ -58,54 +60,54 @@ void LookAndFeel::drawRotarySlider(juce::Graphics& g,
         r.setSize(strWidth + 4, rswl->getTextHeight() + 2);
         r.setCentre(bounds.getCentre());
 
-        g.setColour(Colours::black);
+        g.setColour(enabled ? Colours::black : Colours::darkgrey);
         g.fillRect(r);
 
-        g.setColour(Colours::white);
+        g.setColour(enabled ? Colours::white : Colours::lightgrey);
         g.drawFittedText(text, r.toNearestInt(), juce::Justification::centred, 1);
     }
 }
 
-//void LookAndFeel::drawToggleButton(juce::Graphics& g,
-//    juce::ToggleButton& toggleButton,
-//    bool shouldDrawButtonAsHighlighted,
-//    bool shouldDrawButtonAsDown)
-//{
-//    using namespace juce;
-//
-//    Path powerButton;
-//
-//    auto bounds = toggleButton.getLocalBounds();
-//
-//    g.setColour(Colours::red);
-//    g.drawRect(bounds);
-//    auto size = jmin(bounds.getWidth(), bounds.getHeight()) - 6;
-//    auto r = bounds.withSizeKeepingCentre(size, size).toFloat();
-//
-//    float ang = 30.f;
-//
-//    size -= 6;
-//
-//    powerButton.addCentredArc(r.getCentreX(),
-//        r.getCentreY(),
-//        size * 0.5,
-//        size * 0.5,
-//        0.f,
-//        degreesToRadians(ang),
-//        degreesToRadians(360.f - ang),
-//        true);
-//
-//    powerButton.startNewSubPath(r.getCentreX(), r.getY());
-//    powerButton.lineTo(r.getCentre());
-//
-//    PathStrokeType pst(2.f, PathStrokeType::JointStyle::curved);
-//
-//    auto color = toggleButton.getToggleState() ? Colours::dimgrey : Colour(0u, 172u, 1u);
-//
-//    g.setColour(color);
-//    g.strokePath(powerButton, pst);
-//    g.drawEllipse(r, 2);
-//}
+void LookAndFeel::drawToggleButton(juce::Graphics& g,
+    juce::ToggleButton& toggleButton,
+    bool shouldDrawButtonAsHighlighted,
+    bool shouldDrawButtonAsDown)
+{
+    using namespace juce;
+
+    Path powerButton;
+
+    auto bounds = toggleButton.getLocalBounds();
+
+    g.setColour(Colours::red);
+    g.drawRect(bounds);
+    auto size = jmin(bounds.getWidth(), bounds.getHeight()) - 6;
+    auto r = bounds.withSizeKeepingCentre(size, size).toFloat();
+
+    float ang = 30.f;
+
+    size -= 6;
+
+    powerButton.addCentredArc(r.getCentreX(),
+        r.getCentreY(),
+        size * 0.5,
+        size * 0.5,
+        0.f,
+        degreesToRadians(ang),
+        degreesToRadians(360.f - ang),
+        true);
+
+    powerButton.startNewSubPath(r.getCentreX(), r.getY());
+    powerButton.lineTo(r.getCentre());
+
+    PathStrokeType pst(2.f, PathStrokeType::JointStyle::curved);
+
+    auto color = toggleButton.getToggleState() ? Colours::dimgrey : Colour(0u, 172u, 1u);
+
+    g.setColour(color);
+    g.strokePath(powerButton, pst);
+    g.drawEllipse(r, 2);
+}
 
 //===============================================================================
 void RotarySliderWithLabels::paint(juce::Graphics& g)
@@ -672,13 +674,97 @@ TradeMarkEQAudioProcessorEditor::TradeMarkEQAudioProcessorEditor(TradeMarkEQAudi
         addAndMakeVisible(comp);
     }
 
-    //lowpeakBypassButton.setLookAndFeel(&lnf);
-    //midlowpeakBypassButton.setLookAndFeel(&lnf);
-    //midpeakBypassButton.setLookAndFeel(&lnf);
-    //midhighpeakBypassButton.setLookAndFeel(&lnf);
-    //highpeakBypassButton.setLookAndFeel(&lnf);
-    //lowcutBypassButton.setLookAndFeel(&lnf);
-    //highcutBypassButton.setLookAndFeel(&lnf);
+    lowpeakBypassButton.setLookAndFeel(&lnf);
+    midlowpeakBypassButton.setLookAndFeel(&lnf);
+    midpeakBypassButton.setLookAndFeel(&lnf);
+    midhighpeakBypassButton.setLookAndFeel(&lnf);
+    highpeakBypassButton.setLookAndFeel(&lnf);
+    lowcutBypassButton.setLookAndFeel(&lnf);
+    highcutBypassButton.setLookAndFeel(&lnf);
+
+    auto safePtr = juce::Component::SafePointer<TradeMarkEQAudioProcessorEditor>(this);
+    lowpeakBypassButton.onClick = [safePtr]()
+        {
+            if (auto* comp = safePtr.getComponent())
+            {
+                auto bypassed = comp->lowpeakBypassButton.getToggleState();
+
+                comp->lowPeakFreqSlider.setEnabled(!bypassed);
+                comp->lowPeakGainSlider.setEnabled(!bypassed);
+                comp->lowPeakQualitySlider.setEnabled(!bypassed);
+            }
+        };
+
+    midlowpeakBypassButton.onClick = [safePtr]()
+        {
+            if (auto* comp = safePtr.getComponent())
+            {
+                auto bypassed = comp->midlowpeakBypassButton.getToggleState();
+
+                comp->midlowPeakFreqSlider.setEnabled(!bypassed);
+                comp->midlowPeakGainSlider.setEnabled(!bypassed);
+                comp->midlowPeakQualitySlider.setEnabled(!bypassed);
+            }
+        };
+
+    midpeakBypassButton.onClick = [safePtr]()
+        {
+            if (auto* comp = safePtr.getComponent())
+            {
+                auto bypassed = comp->midpeakBypassButton.getToggleState();
+
+                comp->midPeakFreqSlider.setEnabled(!bypassed);
+                comp->midPeakGainSlider.setEnabled(!bypassed);
+                comp->midPeakQualitySlider.setEnabled(!bypassed);
+            }
+        };
+
+    midhighpeakBypassButton.onClick = [safePtr]()
+        {
+            if (auto* comp = safePtr.getComponent())
+            {
+                auto bypassed = comp->midhighpeakBypassButton.getToggleState();
+
+                comp->midhighPeakFreqSlider.setEnabled(!bypassed);
+                comp->midhighPeakGainSlider.setEnabled(!bypassed);
+                comp->midhighPeakQualitySlider.setEnabled(!bypassed);
+            }
+        };
+
+    highpeakBypassButton.onClick = [safePtr]()
+        {
+            if (auto* comp = safePtr.getComponent())
+            {
+                auto bypassed = comp->highpeakBypassButton.getToggleState();
+
+                comp->highPeakFreqSlider.setEnabled(!bypassed);
+                comp->highPeakGainSlider.setEnabled(!bypassed);
+                comp->highPeakQualitySlider.setEnabled(!bypassed);
+            }
+        };
+
+    lowcutBypassButton.onClick = [safePtr]()
+        {
+            if (auto* comp = safePtr.getComponent())
+            {
+                auto bypassed = comp->lowcutBypassButton.getToggleState();
+
+                comp->lowCutFreqSlider.setEnabled(!bypassed);
+                comp->lowCutSlopeSlider.setEnabled(!bypassed);
+            }
+        };
+
+    highcutBypassButton.onClick = [safePtr]()
+        {
+            if (auto* comp = safePtr.getComponent())
+            {
+                auto bypassed = comp->highcutBypassButton.getToggleState();
+
+                comp->highCutFreqSlider.setEnabled(!bypassed);
+                comp->highCutSlopeSlider.setEnabled(!bypassed);
+            }
+        };
+
 
 
     setSize(600, 500);
@@ -686,7 +772,13 @@ TradeMarkEQAudioProcessorEditor::TradeMarkEQAudioProcessorEditor(TradeMarkEQAudi
 
 TradeMarkEQAudioProcessorEditor::~TradeMarkEQAudioProcessorEditor()
 {
-
+    lowpeakBypassButton.setLookAndFeel(nullptr);
+    midlowpeakBypassButton.setLookAndFeel(nullptr);
+    midpeakBypassButton.setLookAndFeel(nullptr);
+    midhighpeakBypassButton.setLookAndFeel(nullptr);
+    highpeakBypassButton.setLookAndFeel(nullptr);
+    lowcutBypassButton.setLookAndFeel(nullptr);
+    highcutBypassButton.setLookAndFeel(nullptr);
 }
 
 //==============================================================================
@@ -798,6 +890,7 @@ std::vector<juce::Component*> TradeMarkEQAudioProcessorEditor::getComps()
         &highCutSlopeSlider,
         &responseCurveComponent,
         &headerComponent,
+
         &lowcutBypassButton,
         &lowpeakBypassButton,
         &midlowpeakBypassButton,

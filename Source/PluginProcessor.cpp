@@ -242,13 +242,13 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts)
     settings.lowCutSlope = static_cast<Slope>(apvts.getRawParameterValue("LowCut Slope")->load());
     settings.highCutSlope = static_cast<Slope>(apvts.getRawParameterValue("HighCut Slope")->load());
 
-    settings.lowCutBypassed = apvts.getRawParameterValue("LowCut Bypassed")->load();
-    settings.lowPeakBypassed = apvts.getRawParameterValue("LowPeak Bypassed")->load();
-    settings.midlowPeakBypassed = apvts.getRawParameterValue("MidLowPeak Bypassed")->load();
-    settings.midPeakBypassed = apvts.getRawParameterValue("MidPeak Bypassed")->load();
-    settings.midhighPeakBypassed = apvts.getRawParameterValue("MidHighPeak Bypassed")->load();
-    settings.highPeakBypassed = apvts.getRawParameterValue("HighPeak Bypassed")->load();
-    settings.highCutBypassed = apvts.getRawParameterValue("HighCut Bypassed")->load();
+    settings.lowCutBypassed = apvts.getRawParameterValue("LowCut Bypassed")->load() > 0.5f;
+    settings.lowPeakBypassed = apvts.getRawParameterValue("LowPeak Bypassed")->load() > 0.5f;
+    settings.midlowPeakBypassed = apvts.getRawParameterValue("MidLowPeak Bypassed")->load() > 0.5f;
+    settings.midPeakBypassed = apvts.getRawParameterValue("MidPeak Bypassed")->load() > 0.5f;
+    settings.midhighPeakBypassed = apvts.getRawParameterValue("MidHighPeak Bypassed")->load() > 0.5f;
+    settings.highPeakBypassed = apvts.getRawParameterValue("HighPeak Bypassed")->load() > 0.5f;
+    settings.highCutBypassed = apvts.getRawParameterValue("HighCut Bypassed")->load() > 0.5f;
 
     return settings;
 }
