@@ -57,6 +57,21 @@ private:
     juce::String suffix;
 };
 
+struct HeaderComponent : public juce::Component
+{
+public:
+    HeaderComponent(juce::AudioProcessorValueTreeState& tree);
+    ~HeaderComponent() override;
+
+    void paint(juce::Graphics& g) override;
+    void resized() override;
+
+private:
+
+    juce::Image logo;
+
+};
+
 struct ResponseCurveComponent : juce::Component,
     juce::AudioProcessorParameter::Listener,
     juce::Timer
@@ -138,6 +153,8 @@ private:
 
     using APVTS = juce::AudioProcessorValueTreeState;
     using Attachment = APVTS::SliderAttachment;
+
+    HeaderComponent headerComponent;
 
     Attachment 
         lowPeakFreqSliderAttachment,

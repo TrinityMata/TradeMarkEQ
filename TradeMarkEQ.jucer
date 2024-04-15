@@ -13,6 +13,8 @@
             file="Source/PluginEditor.cpp"/>
       <FILE id="Sf1uXy" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
     </GROUP>
+    <FILE id="RVCK4i" name="TrademarkMediaTechLogo.png" compile="0" resource="1"
+          file="Source/TrademarkMediaTechLogo.png"/>
   </MAINGROUP>
   <MODULES>
     <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>

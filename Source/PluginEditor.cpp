@@ -172,6 +172,53 @@ juce::String RotarySliderWithLabels::getDisplayString() const
 }
 
 //==============================================================================
+HeaderComponent::HeaderComponent(juce::AudioProcessorValueTreeState& tree)
+{
+
+}
+
+HeaderComponent::~HeaderComponent()
+{
+
+}
+
+void HeaderComponent::paint (juce::Graphics& g)
+{
+    using namespace juce;
+    //g.fillAll(juce::Colours::beige);
+
+    auto bounds = getLocalBounds();
+
+    juce::Rectangle<int> header;
+    header.setBounds(0, 0, bounds.getWidth(), bounds.getHeight());
+    g.setColour(Colours::grey);
+    g.fillRect(header);
+
+    g.setColour(Colours::black);
+    const int fontHeight = 20;
+    g.setFont(fontHeight);
+    g.drawFittedText("TradeMark EQ", header, juce::Justification::centred, 1);
+
+    auto logoArea = bounds.removeFromRight(bounds.getWidth() * .2);
+
+    logo = juce::ImageCache::getFromMemory(BinaryData::TrademarkMediaTechLogo_png, 
+        BinaryData::TrademarkMediaTechLogo_pngSize);
+
+    g.drawImageWithin(logo, 
+        0,
+        0,
+        logoArea.getWidth(),
+        logoArea.getHeight(),
+        juce::RectanglePlacement::centred);
+
+}
+
+void HeaderComponent::resized()
+{   
+    
+}
+
+//==============================================================================
 ResponseCurveComponent::ResponseCurveComponent(TradeMarkEQAudioProcessor& p) : audioProcessor(p)
 {
     const auto& params = audioProcessor.getParameters();
@@ -485,6 +532,7 @@ TradeMarkEQAudioProcessorEditor::TradeMarkEQAudioProcessorEditor(TradeMarkEQAudi
     lowCutSlopeSlider(*audioProcessor.apvts.getParameter("LowCut Slope"), "dB/Oct"),
     highCutSlopeSlider(*audioProcessor.apvts.getParameter("HighCut Slope"), "db/Oct"),
 
+    headerComponent(audioProcessor.apvts),
     responseCurveComponent(audioProcessor),
     lowPeakFreqSliderAttachment(audioProcessor.apvts, "LowPeak Freq", lowPeakFreqSlider),
     lowPeakGainSliderAttachment(audioProcessor.apvts, "LowPeak Gain", lowPeakGainSlider),
@@ -561,7 +609,9 @@ TradeMarkEQAudioProcessorEditor::TradeMarkEQAudioProcessorEditor(TradeMarkEQAudi
         addAndMakeVisible(comp);
     }
 
-    setSize(650, 500);
+    addAndMakeVisible(headerComponent);
+
+    setSize(600, 500);
 }
 
 TradeMarkEQAudioProcessorEditor::~TradeMarkEQAudioProcessorEditor()
@@ -585,6 +635,11 @@ void TradeMarkEQAudioProcessorEditor::resized()
     // subcomponents in your editor..
 
     auto bounds = getLocalBounds();
+
+    auto labelArea = bounds.removeFromTop(bounds.getHeight() * 0.1);
+
+    headerComponent.setBounds(labelArea);
+
     float hRatio = 25.f / 100.f; // JUCE_LIVE_CONSTANT(33) / 100.f;
     auto responseArea = bounds.removeFromTop(bounds.getHeight() * hRatio);
 
