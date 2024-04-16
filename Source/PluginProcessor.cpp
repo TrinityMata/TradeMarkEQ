@@ -374,22 +374,22 @@ juce::AudioProcessorValueTreeState::ParameterLayout TradeMarkEQAudioProcessor::c
     layout.add(std::make_unique<juce::AudioParameterFloat>
         ("LowCut Freq",
             "LowCut Freq",
-            juce::NormalisableRange<float>(20.f, 20000.f, 1.f, .25f),
+            juce::NormalisableRange<float>(20.f, 20000.f, 1.f, .5f),
             20.f));
 
     //LPF
     layout.add(std::make_unique<juce::AudioParameterFloat>
         ("HighCut Freq",
             "HighCut Freq",
-            juce::NormalisableRange<float>(20.f, 20000.f, 1.f, .25f),
+            juce::NormalisableRange<float>(20.f, 20000.f, 1.f, .5f),
             20000.f));
 
     //Low Peak
     layout.add(std::make_unique<juce::AudioParameterFloat>
         ("LowPeak Freq",
             "LowPeak Freq",
-            juce::NormalisableRange<float>(20.f, 500.f, 1.f, .25f),
-            250.f));
+            juce::NormalisableRange<float>(20.f, 500.f, 1.f, .5f),
+            100.f));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>
         ("LowPeak Gain",
@@ -407,8 +407,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout TradeMarkEQAudioProcessor::c
     layout.add(std::make_unique<juce::AudioParameterFloat>
         ("MidLowPeak Freq",
             "MidLowPeak Freq",
-            juce::NormalisableRange<float>(40.f, 1000.f, 1.f, .25f),
-            550.f));
+            juce::NormalisableRange<float>(40.f, 1000.f, 1.f, .5f),
+            300.f));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>
         ("MidLowPeak Gain",
@@ -426,7 +426,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout TradeMarkEQAudioProcessor::c
     layout.add(std::make_unique<juce::AudioParameterFloat>
         ("MidPeak Freq",
             "MidPeak Freq",
-            juce::NormalisableRange<float>(125.f, 8000.f, 1.f, .25f),
+            juce::NormalisableRange<float>(125.f, 8000.f, 1.f, .5f),
             1000.f));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>
@@ -445,8 +445,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout TradeMarkEQAudioProcessor::c
     layout.add(std::make_unique<juce::AudioParameterFloat>
         ("MidHighPeak Freq",
             "MidHighPeak Freq",
-            juce::NormalisableRange<float>(200.f, 18000.f, 1.f, .25f),
-            12000.f));
+            juce::NormalisableRange<float>(200.f, 18000.f, 1.f, .5f),
+            5000.f));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>
         ("MidHighPeak Gain",
@@ -464,8 +464,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout TradeMarkEQAudioProcessor::c
     layout.add(std::make_unique<juce::AudioParameterFloat>
         ("HighPeak Freq",
             "HighPeak Freq",
-            juce::NormalisableRange<float>(2000.f, 20000.f, 1.f, .25f),
-            17000.f));
+            juce::NormalisableRange<float>(2000.f, 20000.f, 1.f, .5f),
+            13000.f));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>
         ("HighPeak Gain",
