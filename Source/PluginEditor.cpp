@@ -493,7 +493,7 @@ void ResponseCurveComponent::resized()
         auto f = freqs[i];
         auto x = xs[i];
 
-        bool addK = true;
+        bool addK = false;
         String str;
         if (f > 999.f)
         {
