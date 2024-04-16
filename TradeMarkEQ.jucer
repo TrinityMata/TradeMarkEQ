@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="VLMjaW" name="TradeMarkEQ" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" companyWebsite="trademarkmediatech.com"
-              companyName="TradeMark Media &amp; Tech" pluginVST3Category="EQ">
+              companyName="TradeMark Media &amp; Tech" pluginVST3Category="EQ,Fx">
   <MAINGROUP id="onmDDV" name="TradeMarkEQ">
     <GROUP id="{54994BE3-4E81-3500-F31B-59F045D6D4E3}" name="Source">
       <FILE id="rxzJJM" name="PluginProcessor.cpp" compile="1" resource="0"
