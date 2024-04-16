@@ -25,10 +25,10 @@ void LookAndFeel::drawRotarySlider(juce::Graphics& g,
 
     auto enabled = slider.isEnabled();
 
-    g.setColour(enabled ? Colour(97u, 18u, 167u) : Colours::darkgrey);
+    g.setColour(enabled ? Colours::purple : Colours::darkgrey);
     g.fillEllipse(bounds);
 
-    g.setColour(enabled ? Colour(255u, 154u, 1u) : Colours::grey);
+    g.setColour(enabled ? Colours::lightgrey : Colours::grey);
     g.drawEllipse(bounds, 1.f);
 
     if (auto* rswl = dynamic_cast<RotarySliderWithLabels*>(&slider))
@@ -79,14 +79,17 @@ void LookAndFeel::drawToggleButton(juce::Graphics& g,
 
     auto bounds = toggleButton.getLocalBounds();
 
+    bounds.removeFromRight(bounds.getWidth() * .5);
+    bounds.removeFromTop(5);
+
     //g.setColour(Colours::red);
     //g.drawRect(bounds);
-    auto size = jmin(bounds.getWidth(), bounds.getHeight()) - 6;
+    auto size = jmin(bounds.getWidth(), bounds.getHeight()) - 4;
     auto r = bounds.withSizeKeepingCentre(size, size).toFloat();
 
     float ang = 30.f;
 
-    size -= 6;
+    size -= 7;
 
     powerButton.addCentredArc(r.getCentreX(),
         r.getCentreY(),
@@ -102,7 +105,7 @@ void LookAndFeel::drawToggleButton(juce::Graphics& g,
 
     PathStrokeType pst(2.f, PathStrokeType::JointStyle::curved);
 
-    auto color = toggleButton.getToggleState() ? Colours::dimgrey : Colour(0u, 172u, 1u);
+    auto color = toggleButton.getToggleState() ? Colours::dimgrey : Colours::purple;
 
     g.setColour(color);
     g.strokePath(powerButton, pst);
@@ -140,7 +143,7 @@ void RotarySliderWithLabels::paint(juce::Graphics& g)
     auto center = sliderBounds.toFloat().getCentre();
     auto radius = sliderBounds.getWidth() * 0.5f;
 
-    g.setColour(Colour(0u, 172u, 1u));
+    g.setColour(Colours::white);
     g.setFont(getTextHeight());
 
     auto numChoices = labels.size();
@@ -160,6 +163,11 @@ void RotarySliderWithLabels::paint(juce::Graphics& g)
         r.setCentre(c);
         r.setY(r.getY() + getTextHeight());
 
+        g.setColour(Colours::transparentBlack);
+        g.setOpacity(0.6);
+        g.fillRect(r);
+        g.setColour(Colours::white);
+        g.setOpacity(1);
         g.drawFittedText(str, r.toNearestInt(), juce::Justification::centred, 1);
     }
 }
@@ -665,11 +673,11 @@ TradeMarkEQAudioProcessorEditor::TradeMarkEQAudioProcessorEditor(TradeMarkEQAudi
     highCutFreqSlider.labels.add({ 0.f, "20Hz" });
     highCutFreqSlider.labels.add({ 1.f, "20kHz" });
 
-    lowCutSlopeSlider.labels.add({ 0.f, "12" });
-    lowCutSlopeSlider.labels.add({ 1.f, "48" });
+    lowCutSlopeSlider.labels.add({ 0.f, "6" });
+    lowCutSlopeSlider.labels.add({ 1.f, "24" });
 
-    highCutSlopeSlider.labels.add({ 0.f, "12" });
-    highCutSlopeSlider.labels.add({ 1.f, "48" });
+    highCutSlopeSlider.labels.add({ 0.f, "6" });
+    highCutSlopeSlider.labels.add({ 1.f, "24" });
 
     for (auto* comp : getComps())
     {
@@ -806,12 +814,14 @@ void TradeMarkEQAudioProcessorEditor::paint(juce::Graphics& g)
 
     for (auto colour : colours)
     {
+
         g.setColour(colour);
         g.fillRect(colourArea);
 
         colourArea.translate(colourArea.getWidth() + 2, 0.0f);
 
     }
+
 
 }
 
