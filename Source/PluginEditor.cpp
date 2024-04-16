@@ -79,8 +79,8 @@ void LookAndFeel::drawToggleButton(juce::Graphics& g,
 
     auto bounds = toggleButton.getLocalBounds();
 
-    g.setColour(Colours::red);
-    g.drawRect(bounds);
+    //g.setColour(Colours::red);
+    //g.drawRect(bounds);
     auto size = jmin(bounds.getWidth(), bounds.getHeight()) - 6;
     auto r = bounds.withSizeKeepingCentre(size, size).toFloat();
 
@@ -234,7 +234,7 @@ void HeaderComponent::paint (juce::Graphics& g)
 
     juce::Rectangle<int> header;
     header.setBounds(0, 0, bounds.getWidth(), bounds.getHeight());
-    g.setColour(Colours::grey);
+    g.setColour(Colours::lightgrey);
     g.fillRect(header);
 
     g.setColour(Colours::black);
@@ -262,6 +262,7 @@ void HeaderComponent::resized()
 }
 
 //==============================================================================
+
 ResponseCurveComponent::ResponseCurveComponent(TradeMarkEQAudioProcessor& p) : audioProcessor(p)
 {
     const auto& params = audioProcessor.getParameters();
@@ -591,6 +592,7 @@ TradeMarkEQAudioProcessorEditor::TradeMarkEQAudioProcessorEditor(TradeMarkEQAudi
 
     headerComponent(audioProcessor.apvts),
     responseCurveComponent(audioProcessor),
+
     lowPeakFreqSliderAttachment(audioProcessor.apvts, "LowPeak Freq", lowPeakFreqSlider),
     lowPeakGainSliderAttachment(audioProcessor.apvts, "LowPeak Gain", lowPeakGainSlider),
     lowPeakQualitySliderAttachment(audioProcessor.apvts, "LowPeak Quality", lowPeakQualitySlider),
@@ -789,6 +791,28 @@ void TradeMarkEQAudioProcessorEditor::paint(juce::Graphics& g)
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll(Colours::black);
 
+    auto bounds = getLocalBounds();
+    bounds.removeFromTop(bounds.getHeight() * 0.33);
+    bounds.removeFromBottom(bounds.getHeight() * 0.4);
+
+    Array<Colour> colours{ Colours::red,
+        Colours::orange,
+        Colours::yellow,
+        Colours::green,
+        Colours::blue };
+
+    auto colourPeakArea = bounds.reduced(2.0f).withWidth(bounds.getWidth() - 4);
+    auto colourArea = colourPeakArea.withWidth(colourPeakArea.getWidth() / (float)colours.size());
+
+    for (auto colour : colours)
+    {
+        g.setColour(colour);
+        g.fillRect(colourArea);
+
+        colourArea.translate(colourArea.getWidth() + 2, 0.0f);
+
+    }
+
 }
 
 void TradeMarkEQAudioProcessorEditor::resized()
@@ -807,7 +831,7 @@ void TradeMarkEQAudioProcessorEditor::resized()
 
     responseCurveComponent.setBounds(responseArea);
 
-    bounds.removeFromTop(15); //Creates space between response curve and sliders
+    bounds.removeFromTop(5); //Creates space between response curve and sliders
 
     auto peakArea = bounds.removeFromTop(bounds.getHeight() * 0.6);
 

@@ -160,12 +160,12 @@ private:
         lowCutSlopeSlider,
         highCutSlopeSlider;
 
+    HeaderComponent headerComponent;
+
     ResponseCurveComponent responseCurveComponent;
 
     using APVTS = juce::AudioProcessorValueTreeState;
     using Attachment = APVTS::SliderAttachment;
-
-    HeaderComponent headerComponent;
 
     Attachment 
         lowPeakFreqSliderAttachment,
