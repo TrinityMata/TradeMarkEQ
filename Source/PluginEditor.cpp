@@ -236,7 +236,6 @@ HeaderComponent::~HeaderComponent()
 void HeaderComponent::paint (juce::Graphics& g)
 {
     using namespace juce;
-    //g.fillAll(juce::Colours::beige);
 
     auto bounds = getLocalBounds();
 
@@ -246,9 +245,9 @@ void HeaderComponent::paint (juce::Graphics& g)
     g.fillRect(header);
 
     g.setColour(Colours::black);
-    const int fontHeight = 20;
-    g.setFont(fontHeight);
-    g.drawFittedText("TradeMark EQ", header, juce::Justification::centred, 1);
+    const int fontHeight = 25;
+    g.setFont(Font("Anton", fontHeight, Font::bold));
+    g.drawFittedText("TradeMark EQ - Demo", header, juce::Justification::centred, 1);
 
     auto logoArea = bounds.removeFromRight(bounds.getWidth() * .2);
 
@@ -534,13 +533,13 @@ void ResponseCurveComponent::resized()
 
         g.drawFittedText(str, r, juce::Justification::centred, 1);
 
-        str.clear();
-        str << (gDB - 12.f);
+        //str.clear();
+        //str << (gDB - 12.f);
 
         r.setX(1);
         textWidth = g.getCurrentFont().getStringWidth(str);
         r.setSize(textWidth, fontHeight);
-        g.setColour(Colours::lightgrey);
+        g.setColour(gDB == 0.f ? Colour(0u, 172u, 1u) : Colours::lightgrey);
         g.drawFittedText(str, r, juce::Justification::centred, 1);
 
     }
