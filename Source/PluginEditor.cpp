@@ -79,7 +79,7 @@ void LookAndFeel::drawToggleButton(juce::Graphics& g,
 
     auto bounds = toggleButton.getLocalBounds();
 
-    bounds.removeFromRight(bounds.getWidth() * .5);
+    bounds.removeFromRight(bounds.getWidth() * .65);
     bounds.removeFromTop(5);
 
     //g.setColour(Colours::red);
@@ -426,9 +426,6 @@ void ResponseCurveComponent::paint(juce::Graphics& g)
     {
         responsiveCurve.lineTo(responseArea.getX() + i, map(mags[i]));
     }
-
-    g.setColour(Colours::orange);
-    g.drawRoundedRectangle(getRenderArea().toFloat(), 4.f, 1.f);
 
     g.setColour(Colours::white);
     g.strokePath(responsiveCurve, PathStrokeType(2.f));
@@ -777,7 +774,7 @@ TradeMarkEQAudioProcessorEditor::TradeMarkEQAudioProcessorEditor(TradeMarkEQAudi
 
 
 
-    setSize(600, 500);
+    setSize(550, 500);
 }
 
 TradeMarkEQAudioProcessorEditor::~TradeMarkEQAudioProcessorEditor()
@@ -801,7 +798,7 @@ void TradeMarkEQAudioProcessorEditor::paint(juce::Graphics& g)
 
     auto bounds = getLocalBounds();
     bounds.removeFromTop(bounds.getHeight() * 0.33);
-    bounds.removeFromBottom(bounds.getHeight() * 0.4);
+    bounds.removeFromBottom(bounds.getHeight() * 0.35);
 
     Array<Colour> colours{ Colours::red,
         Colours::orange,
@@ -843,7 +840,7 @@ void TradeMarkEQAudioProcessorEditor::resized()
 
     bounds.removeFromTop(5); //Creates space between response curve and sliders
 
-    auto peakArea = bounds.removeFromTop(bounds.getHeight() * 0.6);
+    auto peakArea = bounds.removeFromTop(bounds.getHeight() * 0.65);
 
     auto lowPeakArea = peakArea.removeFromLeft(peakArea.getWidth() * 0.2);
     lowpeakBypassButton.setBounds(lowPeakArea.removeFromTop(25));
