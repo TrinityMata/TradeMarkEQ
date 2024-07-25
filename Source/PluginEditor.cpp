@@ -251,15 +251,15 @@ void HeaderComponent::paint (juce::Graphics& g)
 
     auto logoArea = bounds.removeFromRight(bounds.getWidth() * .2);
 
-    logo = juce::ImageCache::getFromMemory(BinaryData::TrademarkMediaTechLogo_png, 
-        BinaryData::TrademarkMediaTechLogo_pngSize);
+    logo = juce::ImageCache::getFromMemory(BinaryData::TradeMarkMediaTechLogo10p_png,
+        BinaryData::TradeMarkMediaTechLogo10p_pngSize);
 
     g.drawImageWithin(logo, 
         0,
         0,
         logoArea.getWidth(),
         logoArea.getHeight(),
-        juce::RectanglePlacement::centred);
+        juce::RectanglePlacement::xLeft);
 
 }
 
